@@ -5,6 +5,7 @@ import threading
 import tkinter as tk
 from tkinter import ttk, messagebox, font as tkfont
 from .positions import PositionStore
+from .arcs import ArcWindow
 from .deletions import DeletionStore
 from .topology import edit as edit_topology, node_names, nearest_nodes
 from .special_nodes import load_special_nodes
@@ -26,6 +27,7 @@ class GraphBrowser(Inspector, tk.Tk):
         self.title('Katakouzina — Episode graphs')
         self.geometry('1700x950'); self.minsize(1200, 650)
         self.label_font = tkfont.Font(root=self, family='Segoe UI', size=self.preferences.get('graph_font_size',18))
+        self.show_node_names=True
         self.all_positions={}
         self.position_store=None;self.position_key=None;self.position_save_job=None
         self.protocol("WM_DELETE_WINDOW",self.close_app)
@@ -61,6 +63,9 @@ class GraphBrowser(Inspector, tk.Tk):
         view.add_checkbutton(label='Hide global leaves',variable=self.hide_leaves,command=self.render,accelerator='Ctrl+L')
         view.add_checkbutton(label='2-hop view',variable=self.hops_enabled,command=self.menu_hops,accelerator='Ctrl+H')
         menu.add_cascade(label='View',menu=view)
+        tools=tk.Menu(menu,tearoff=False)
+        tools.add_command(label='Arc diagram',command=self.open_arc_diagram)
+        menu.add_cascade(label='Tools',menu=tools)
         self.configure(menu=menu)
 
         outer = ttk.Panedwindow(self, orient=tk.HORIZONTAL); outer.pack(fill=tk.BOTH, expand=True)
@@ -330,7 +335,7 @@ class GraphBrowser(Inspector, tk.Tk):
             fill=self.special_node_colors.get(n,fill)
             r=18 if n==self.selected_node else 14
             dot=self.canvas.create_oval(x-r,y-r,x+r,y+r,fill=fill,outline=FIELD,width=2.5)
-            label=self.canvas.create_text(x+r+6,y,text=n,anchor='w',font=self.label_font,fill=TEXT)
+            label=self.canvas.create_text(x+r+6,y,text=n,anchor='w',font=self.label_font,fill=TEXT,tags=('node-name',),state='normal' if self.show_node_names else 'hidden')
             self.items[dot]=('node',n);self.items[label]=('node',n)
             self.node_items[n]=(dot,label)
         if not self.positions:self.canvas.create_text(20,30,anchor='w',text='No nodes match these filters.',fill=TEXT,font=('Segoe UI',12))
@@ -471,3 +476,15 @@ class GraphBrowser(Inspector, tk.Tk):
         else:
             row=next((r for r in self.rows if r['edge_id']==key),None)
             if row:self.inspect_edge(row)
+
+    def open_arc_diagram(self):
+        if self.graph is None:
+            messagebox.showinfo('Arc diagram','Select a graph and wait for layout to finish.',parent=self);return
+        rows=[dict(attrs['record']) for a,b,attrs in self.graph.edges(data=True)]
+        try:ArcWindow(self,rows)
+        except Exception as exc:messagebox.showerror('Cannot draw arc diagram',str(exc),parent=self)
+
+    def toggle_node_names(self):
+        self.show_node_names=not self.show_node_names
+        self.canvas.itemconfigure('node-name',state='normal' if self.show_node_names else 'hidden')
+        return 'break'

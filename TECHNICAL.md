@@ -74,3 +74,18 @@ Optional special_nodes.json at the dataset root maps exact node labels to #RRGGB
 See DATA_MODEL.md for the text curation schema and AI proposal workflow.
 
 Right-click an edge to merge its endpoints, or a node to split it. Split edge inheritance is off by default.
+
+## Arc diagram
+
+Tools → Arc diagram opens a snapshot of the current rendered graph, respecting its
+filters and deletions. Original edges become vertices of a line graph: each pair
+sharing an original node produces arcs for the full cross-product of its evidence
+ranges. A range contributes its midpoint in elapsed seconds. Pairs are unordered
+and generated once; equal-time combinations remain as small loops. Edges without
+evidence cannot contribute arcs. Colors group arcs by shared node. Endpoints are grouped into 10-pixel bins and each unordered bin pair is drawn once.
+Resize or zoom recalculates the bins; wider plots resolve smaller time intervals.
+Labels combine the shared node names. The slider zooms horizontally and dragging pans.
+Episode timestamps use the same elapsed-time axis. There are no hover details.
+No subtitles or graph records are modified by this view.
+
+Arc labels identify shared nodes at each apex. Ctrl+N toggles labels without changing the viewport; Escape closes the arc window.

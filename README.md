@@ -11,3 +11,11 @@ Its AI-friendly schema lets an agent do most of the initial extraction and organ
 Human decisions are preserved and identified separately, so an agent can recognize those judgments and build on them. The agent can then complete and refine the graph before another human review. This iterative workflow keeps human judgment central while saving time on the repetitive work.
 
 Licensed under the [MIT License](LICENSE).
+
+## Tools
+
+### Arc timeline
+
+Visualizes relationships over narrative time, making long-range connections and temporal structure easy to inspect.
+
+![Katakouzina arc timeline](screenshot-arc.jpg)
