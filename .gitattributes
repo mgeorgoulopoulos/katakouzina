@@ -1,0 +1,8 @@
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.tsv text eol=lf
+*.bat text eol=crlf
+
+# Empty final TSV cells require trailing tab delimiters.
+*.tsv whitespace=-blank-at-eol
